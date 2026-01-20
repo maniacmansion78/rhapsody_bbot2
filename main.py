@@ -106,9 +106,9 @@ def send_faq(chat_id):
     faq_text = (
         "📌 *Aqui está a lista de perguntas frequentes atualizada sobre o Rhapsody Protocol*\n\n"
         "*Em que situação está o projeto atualmente?*\n"
-        "O Rhapsody Protocol está em fase de pré-venda, que vai até 20 de janeiro de 2026 na plataforma CriptoCash. O lançamento oficial do token $RHAP ocorrerá em 23 de janeiro de 2026 na Brasil Bitcoin (BBT). A Musicplayce é apenas o primeiro case de uso dentro do protocolo — uma demonstração prática de como empresas podem integrar gamificação, NFTs e recompensas com RHAP.\n\n"
+        "O Rhapsody Protocol segue em pré-venda ativa na CriptoCash (mesmo link) até nova data, que será anunciada em breve. O lançamento do token $RHAP, originalmente previsto para 23/01 na Brasil Bitcoin (BBT), foi adiado — a nova data será definida em reunião interna em 27/01.\n\n" 
         "*O token $RHAP já foi lançado?*\n"
-        "Não, o token $RHAP ainda não foi lançado publicamente. Ele será disponibilizado oficialmente em 23 de janeiro de 2026 na Brasil Bitcoin, após encerrar a pré-venda em 20 de janeiro na CriptoCash.\n\n"
+        "Não, o token $RHAP ainda não foi lançado publicamente. Ele será disponibilizado oficialmente na Brasil Bitcoin (BBT) após o encerramento da pré-venda estendida, com a data de listagem a ser confirmada em 27/01/2026.\n"       
         "*Em qual rede o projeto e o token serão lançados?*\n"
         "O Rhapsody Protocol e o token $RHAP operam na rede Ethereum, seguindo o padrão ERC-20. Essa escolha garante compatibilidade com wallets amplamente utilizadas, segurança e acesso ao ecossistema DeFi consolidado.\n\n"
         "*Qual o supply total do token $RHAP?*\n"
@@ -121,8 +121,8 @@ def send_faq(chat_id):
         "- Futuramente, votar em decisões da DAO e pagar por serviços dentro do protocolo.\n\n"
         "*Qual a função dos usuários nessa fase do projeto?*\n"
         "Nesta fase, os usuários podem:\n"
-        "- Participar da pré-venda (até 20/01/2026 em CriptoCash),\n"
-        "- Se preparar para o lançamento oficial (23/01/2026 na Brasil Bitcoin),\n"
+        "- Participar da pré-venda,\n"
+        "- Se preparar para o lançamento oficial,\n"
         "- Acompanhar os cases de uso como a Musicplayce (apenas um exemplo de aplicação),\n"
         "- *Tornar-se um parceiro de divulgação*: se você tem um canal, comunidade ou audiência e quer promover o Rhapsody Protocol, inscreva-se no programa de afiliados e ganhe até *15% de comissão* sobre todas as vendas geradas por você!\n\n"
     )
