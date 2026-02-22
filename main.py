@@ -95,7 +95,7 @@ def send_welcome(chat_id, first_name):
 
     keyboard = {
         "inline_keyboard": [
-            [{"text": "🌐 Site oficial", "url": "https://rhapsody.criptocash.app/"}],
+            [{"text": "🌐 Site oficial", "url": "https://rhapsodycoin.com/"}],
             [
                 {"text": "📌 FAQ", "callback_data": "faq"},
                 {"text": "🛒 Compre RHAP", "url": "https://rhapsody.criptocash.app/"}
