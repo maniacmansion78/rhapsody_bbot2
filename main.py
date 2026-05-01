@@ -120,27 +120,19 @@ def send_welcome(chat_id, first_name):
 
 def send_faq(chat_id):
     faq_text = (
-        "📌 *Aqui está a lista de perguntas frequentes atualizada sobre o Rhapsody Protocol*\n\n"
-        "*Em que situação está o projeto atualmente?*\n"
-        "O Rhapsody Protocol segue em pré-venda ativa na CriptoCash até nova data, que será anunciada em breve. O lançamento do token $RHAP, originalmente previsto para 23/01 na Brasil Bitcoin (BBT), foi adiado — a nova data será definida em reunião interna em 27/01/2026.\n\n"
-        "*O token $RHAP já foi lançado?*\n"
-        "Não, o token $RHAP ainda não foi lançado publicamente. Ele será disponibilizado oficialmente na Brasil Bitcoin (BBT) após o encerramento da pré-venda estendida, com a data de listagem a ser confirmada em 27/01/2026.\n\n"
-        "*Em qual rede o projeto e o token serão lançados?*\n"
-        "O Rhapsody Protocol e o token $RHAP operam na rede Ethereum, seguindo o padrão ERC-20.\n\n"
-        "*Qual o supply total do token $RHAP?*\n"
-        "O supply total é fixo em 1.000.000.000 (1 bilhão) de tokens RHAP. Não haverá novas emissões.\n\n"
-        "*Qual será a função do token $RHAP?*\n"
-        "O $RHAP é o token utilitário central do ecossistema. Ele será usado para:\n"
-        "- Acessar e interagir com aplicações gamificadas (como Musicplayce),\n"
-        "- Participar de mecânicas de gacha, staking e recompensas,\n"
-        "- Mintar NFTs certificados com utilidade real,\n"
-        "- Futuramente, votar em decisões da DAO e pagar por serviços.\n\n"
-        "*Qual a função dos usuários nessa fase?*\n"
-        "Nesta fase, os usuários podem:\n"
-        "- Participar da pré-venda,\n"
-        "- Se preparar para o lançamento oficial,\n"
-        "- Acompanhar cases como a Musicplayce,\n"
-        "- Tornar-se parceiro de divulgação (até 15% de comissão).\n\n"
+        "📌 *Perguntas Frequentes – Rhapsody Protocol*\n\n"
+        "*O que é o Rhapsody Protocol?*\n"
+        "O Rhapsody Protocol é uma infraestrutura de gamificação para empresas, construída na blockchain Ethereum. Transformamos participação em valor real: marcas e criadores podem criar programas de engajamento com missões, níveis, conquistas e recompensas tokenizadas — com experiência Web2 e tecnologia Web3.\n\n"
+        "*Para que serve o token $RHAP?*\n"
+        "O $RHAP é o token utilitário do ecossistema. Ele será usado para recompensar usuários ativos, acessar benefícios exclusivos, participar de staking e gacha no MusicPlayce, mintar NFTs com utilidade e, futuramente, governar a DAO.\n\n"
+        "*Quando será o lançamento do $RHAP?*\n"
+        "O lançamento público do token $RHAP está previsto para *meados de junho de 2026*, aguardando confirmação final da data pela equipe e parceiros estratégicos.\n\n"
+        "*Onde posso comprar $RHAP?*\n"
+        "Atualmente, o $RHAP está em pré-venda exclusiva em [rhapsody.criptocash.app](https://rhapsody.criptocash.app). Após o lançamento, estará listado na Brasil Bitcoin.\n\n"
+        "*Em qual blockchain o Rhapsody opera?*\n"
+        "Na rede Ethereum (padrão ERC-20), garantindo segurança e interoperabilidade.\n\n"
+        "*O Rhapsody é só mais um token especulativo?*\n"
+        "Não. O Rhapsody nasce com utilidade real desde o dia 1, integrado à MusicPlayce (maior comunidade de músicos da América Latina) e com soluções B2B prontas para empresas de verdade."
     )
 
     keyboard = {
@@ -198,119 +190,4 @@ def webhook():
         # === 2. MENSAGENS DE TEXTO ===
         if "message" in data:
             message = data["message"]
-            chat_id = message["chat"]["id"]
-            text = message.get("text", "").lower().strip()
-            from_user = message["from"]
-            user_id = from_user["id"]
-            first_name = from_user.get("first_name", "amigo")
-
-            # /start em privado → boas-vindas
-            if text == "/start" and message["chat"]["type"] == "private":
-                send_welcome(chat_id, first_name)
-                return "OK"
-
-            # /start em grupo → instrução
-            if text == "/start" and message["chat"]["type"] != "private":
-                reply = {
-                    "chat_id": chat_id,
-                    "text": "👋 Olá! Para ver todas as opções, envie /start em uma conversa privada comigo.",
-                    "reply_to_message_id": message["message_id"]
-                }
-                requests.post(f"{TELEGRAM_API}/sendMessage", json=reply)
-                return "OK"
-
-            # Gatilhos de compra
-            for trigger in TRIGGERS:
-                if trigger in text:
-                    keyboard = {
-                        "inline_keyboard": [[{
-                            "text": "🛒 Vá para a Loja",
-                            "url": "https://rhapsody.criptocash.app/"
-                        }]]
-                    }
-                    payload = {
-                        "chat_id": chat_id,
-                        "video": "BAACAgEAAxkBAAMyaTtJds7IEDJZKrPlUClLPkQ6gdsAAsMGAAKQcthFypomT3bj9iM2BA",
-                        "caption": "🎥 Aqui está como comprar $RHAP!",
-                        "reply_markup": keyboard
-                    }
-                    requests.post(f"{TELEGRAM_API}/sendVideo", json=payload)
-                    break
-            return "OK"
-
-        # === 3. CALLBACKS (BOTÕES) ===
-        if "callback_query" in data:
-            callback = data["callback_query"]
-            chat_id = callback["message"]["chat"]["id"]
-            data_value = callback["data"]
-            from_user_id = callback["from"]["id"]
-
-            # CAPTCHA
-            if data_value.startswith("captcha_"):
-                try:
-                    target_user_id = int(data_value.split("_", 1)[1])
-                    user_data = pending_users.get(target_user_id)
-                    if from_user_id == target_user_id and user_data:
-                        # Apagar mensagem do captcha
-                        requests.post(f"{TELEGRAM_API}/deleteMessage", json={
-                            "chat_id": chat_id,
-                            "message_id": callback["message"]["message_id"]
-                        })
-                        pending_users.pop(target_user_id, None)
-                        # Enviar boas-vindas
-                        first_name = callback["from"].get("first_name", "amigo")
-                        send_welcome(chat_id, first_name)
-                        # Resposta ao clique
-                        requests.post(f"{TELEGRAM_API}/answerCallbackQuery", json={
-                            "callback_query_id": callback["id"],
-                            "text": "✅ Bem-vindo à Comunidade Rhapsody!",
-                            "show_alert": False
-                        })
-                    else:
-                        requests.post(f"{TELEGRAM_API}/answerCallbackQuery", json={
-                            "callback_query_id": callback["id"],
-                            "text": "❌ Este CAPTCHA não é para você.",
-                            "show_alert": True
-                        })
-                except Exception as e:
-                    print(f"[ERROR] Erro no captcha: {e}")
-                return "OK"
-
-            # Outros botões
-            requests.post(f"{TELEGRAM_API}/answerCallbackQuery", json={
-                "callback_query_id": callback["id"]
-            })
-            if data_value == "faq":
-                send_faq(chat_id)
-            elif data_value == "redes_sociais":
-                send_social_media(chat_id)
-            return "OK"
-
-        return "OK"
-
-    except Exception as e:
-        print(f"[CRITICAL ERROR] {e}")
-        return "OK"
-
-# --- ROTAS AUXILIARES ---
-@app.route("/")
-def home():
-    return "✅ Bot ativo! | Rhapsody Protocol — Gamificação e engajamento digital."
-
-@app.route("/setwebhook")
-def set_webhook():
-    webhook_url = f"https://{request.host}/{TOKEN}"
-    payload = {
-        "url": webhook_url,
-        "allowed_updates": ["message", "callback_query", "chat_member"]
-    }
-    response = requests.post(
-        f"https://api.telegram.org/bot{TOKEN}/setWebhook",
-        json=payload
-    )
-    return f"Webhook configurado para: {webhook_url}\nResposta: {response.json()}"
-
-# --- INICIALIZAÇÃO ---
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+            chat_id = message["chat"]["
