@@ -11,6 +11,9 @@ TOKEN = os.getenv("TOKEN")
 BOT_ID = os.getenv("BOT_ID", "")
 TELEGRAM_API = f"https://api.telegram.org/bot{TOKEN}"
 
+# 📄 Endereço do Contrato
+CONTRACT_ADDRESS = "0xA77720b75609962d680D3456c2b2F85515f797da"
+
 # 🧠 Estado global
 last_welcome_message = {}  # {chat_id: message_id}
 pending_users = {}         # {user_id: {"chat_id": ..., "message_id": ...}}
@@ -19,6 +22,25 @@ pending_users = {}         # {user_id: {"chat_id": ..., "message_id": ...}}
 TRIGGERS = ["como comprar", "onde comprar", "quero comprar", "comprar rhap", "como compra"]
 
 # --- FUNÇÕES AUXILIARES ---
+
+def send_contract(chat_id, reply_to_message_id=None):
+    """Envia o endereço do contrato do token"""
+    contract_text = (
+        "📄 **Contrato oficial do token $RHAP:**\n\n"
+        f"`{CONTRACT_ADDRESS}`\n\n"
+        "⚠️ *Sempre verifique se o endereço está correto antes de interagir!*"
+    )
+    payload = {
+        "chat_id": chat_id,
+        "text": contract_text,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
+    }
+    if reply_to_message_id:
+        payload["reply_to_message_id"] = reply_to_message_id
+        
+    requests.post(f"{TELEGRAM_API}/sendMessage", json=payload)
+
 def remove_user_if_pending(chat_id, user_id, message_id):
     """Apaga mensagem de captcha e expulsa usuário após 40s"""
     time.sleep(40)
@@ -195,6 +217,12 @@ def webhook():
             from_user = message["from"]
             user_id = from_user["id"]
             first_name = from_user.get("first_name", "amigo")
+            message_id = message["message_id"]
+
+            # NOVO: Comando CA / Contrato
+            if text in ["ca", "!ca", "/ca", "contrato", "contract", "endereço", "address"]:
+                send_contract(chat_id, reply_to_message_id=message_id)
+                return "OK"
 
             # /start em privado → boas-vindas
             if text == "/start" and message["chat"]["type"] == "private":
@@ -206,7 +234,7 @@ def webhook():
                 reply = {
                     "chat_id": chat_id,
                     "text": "👋 Olá! Para ver todas as opções, envie /start em uma conversa privada comigo.",
-                    "reply_to_message_id": message["message_id"]
+                    "reply_to_message_id": message_id
                 }
                 requests.post(f"{TELEGRAM_API}/sendMessage", json=reply)
                 return "OK"
@@ -224,7 +252,8 @@ def webhook():
                         "chat_id": chat_id,
                         "video": "BAACAgEAAxkBAAMyaTtJds7IEDJZKrPlUClLPkQ6gdsAAsMGAAKQcthFypomT3bj9iM2BA",
                         "caption": "🎥 Aqui está como comprar $RHAP!",
-                        "reply_markup": keyboard
+                        "reply_markup": keyboard,
+                        "reply_to_message_id": message_id
                     }
                     requests.post(f"{TELEGRAM_API}/sendVideo", json=payload)
                     break
